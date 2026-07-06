@@ -53,7 +53,11 @@ def score_and_aggregate(df, freq="30min"):
     # vectorized regex count over the WHOLE comment column  <-- cuDF sweet spot
     df["tox_hits"] = df["text"].str.count(TOX_PATTERN).fillna(0)
     df["tox"] = (df["tox_hits"] / HITS_NORMALIZER).clip(upper=1.0)
-    df["bucket"] = df["timestamp"].dt.floor(freq)
+    # integer-arithmetic time bucketing — GPU-native, avoids a .dt.floor CPU fallback.
+    # Floors each timestamp to the freq grid measured from the epoch (identical to
+    # .dt.floor for fixed frequencies like 10min/30min/1h). Requires ns-resolution.
+    bucket_ns = pd.Timedelta(freq).value
+    df["bucket"] = ((df["timestamp"].astype("int64") // bucket_ns) * bucket_ns).astype("datetime64[ns]")
 
     agg = (
         df.groupby(["community", "thread_id", "bucket"])

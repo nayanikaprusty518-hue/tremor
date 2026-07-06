@@ -97,9 +97,9 @@ def generate(rows, n_communities, n_threads, n_authors, days, meltdown_frac, see
     c_thread = np.concatenate([b_thread, u_thread])
     c_tfrac = np.concatenate([b_tfrac, u_tfrac])
 
-    # --- timestamps --------------------------------------------------------
+    # --- timestamps (nanosecond resolution — most cuDF/GPU friendly) -------
     ts_sec = thr_start[c_thread] + c_tfrac * thr_dur[c_thread]
-    timestamp = base_ts + (ts_sec * 1000.0).astype("timedelta64[ms]")
+    timestamp = base_ts.astype("datetime64[ns]") + (ts_sec * 1e9).astype("int64").astype("timedelta64[ns]")
 
     # --- is this comment inside its thread's meltdown window? --------------
     ms = thr_m_start[c_thread]
