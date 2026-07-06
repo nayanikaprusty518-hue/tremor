@@ -2,7 +2,7 @@
 Tremor core — community meltdown early-warning engine.
 
 Design note (why this is the heart of the acceleration story):
-The heavy stage — `score_and_aggregate` — runs a vectorized regex string op and a
+The heavy stage — `score_and_aggregate` — runs vectorized string matching and a
 groupby over EVERY comment (millions of rows). That is exactly the workload where
 NVIDIA cuDF crushes pandas. Because we use ONLY the pandas API here, the identical
 code runs:
@@ -14,7 +14,6 @@ The downstream stage — `compute_risk` / `thread_watchlist` — runs on the sma
 aggregated table (threads x time-buckets), so its cost is negligible either way.
 """
 
-import re
 import numpy as np
 import pandas as pd  # under `python -m cudf.pandas ...` this transparently becomes cuDF
 
@@ -33,9 +32,6 @@ LEXICON = {
                "brigading", "gtfo", "cringe", "troll"],
 }
 TOX_WORDS = [w for tier in LEXICON.values() for w in tier]
-# longest phrases first so multi-word markers ("shut up") match before parts
-_ESCAPED = sorted((re.escape(w) for w in TOX_WORDS), key=len, reverse=True)
-TOX_PATTERN = r"\b(?:" + "|".join(_ESCAPED) + r")\b"
 
 # tuning knobs
 HITS_NORMALIZER = 3.0   # a comment with >=3 hostile markers is treated as fully toxic
@@ -50,8 +46,19 @@ STATUS_CRITICAL = 50   # ~median meltdown -> the worst threads go red
 def score_and_aggregate(df, freq="30min"):
     """Score every comment for toxicity and roll comments up into
     (community, thread, time-bucket) buckets. This is the benchmarked stage."""
-    # vectorized regex count over the WHOLE comment column  <-- cuDF sweet spot
-    df["tox_hits"] = df["text"].str.count(TOX_PATTERN).fillna(0)
+    # Toxicity scoring — GPU-fast literal matching (NOT one big-alternation regex).
+    # A 33-way `\b(a|b|...)\b` regex is pathologically slow on libcudf's regex engine
+    # (it dominated the GPU benchmark). Instead: lowercase -> turn punctuation into
+    # spaces -> pad, then count each lexicon term as a SPACE-DELIMITED LITERAL. The
+    # spaces act as word boundaries (so "hate" inside "whatever" is NOT matched), and
+    # each pass is a trivial literal match — exactly libcudf's fast path.
+    norm = df["text"].str.lower().str.replace(r"[^a-z0-9 ]", " ", regex=True)
+    norm = " " + norm + " "
+    hits = None
+    for term in TOX_WORDS:
+        c = norm.str.count(" " + term + " ")
+        hits = c if hits is None else hits + c
+    df["tox_hits"] = hits.fillna(0)
     df["tox"] = (df["tox_hits"] / HITS_NORMALIZER).clip(upper=1.0)
     # integer-arithmetic time bucketing — GPU-native, avoids a .dt.floor CPU fallback.
     # Floors each timestamp to the freq grid measured from the epoch (identical to

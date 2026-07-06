@@ -31,7 +31,7 @@ climbing, before it peaks.**
 ## How it works (the pipeline)
 
 ```
-raw comments ─▶ [1] score toxicity      (vectorized regex over EVERY comment)  ◀── GPU-accelerated
+raw comments ─▶ [1] score toxicity      (vectorized lexicon matching, EVERY comment)◀── GPU-accelerated
              ─▶     bucket by time        (community × thread × 30-min window)   ◀── GPU-accelerated
              ─▶     aggregate             (volume, mean toxicity, unique authors)◀── GPU-accelerated
              ─▶ [2] rolling baselines      per thread
