@@ -1,0 +1,10 @@
+# Tremor — app + local (CPU) requirements.
+# The GPU acceleration layer (cudf) is installed ONLY in the Colab/GPU notebook,
+# because cudf.pandas is a zero-code-change drop-in: the SAME code below runs on
+# CPU with pandas here, and on an NVIDIA GPU with `python -m cudf.pandas`.
+pandas>=2.1   # Styler.map used in the dashboard
+numpy>=1.24
+pyarrow>=12.0
+streamlit>=1.30
+plotly>=5.18
+matplotlib>=3.6   # used by pandas Styler background gradients in the dashboard

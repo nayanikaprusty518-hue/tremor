@@ -1,0 +1,8 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+big.parquet          # large benchmark dataset (regenerate in Colab)
+.streamlit/secrets.toml
+.DS_Store
