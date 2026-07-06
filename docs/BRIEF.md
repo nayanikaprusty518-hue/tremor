@@ -13,8 +13,8 @@ hostility, and rolls it up per thread and time window to produce a 0–100 meltd
 risk, a ranked watchlist, a per-community health score, and — the key output — an
 **early-warning forecast that fires while a thread is still climbing, ~60 minutes
 before it peaks.** The heavy scoring stage runs on the identical code on CPU or an
-NVIDIA GPU via `cudf.pandas`; on 5M comments the GPU is ~20× faster, which is what
-makes the warning arrive in time to act.
+NVIDIA GPU via `cudf.pandas`; on 5M comments the GPU is **33× faster** (97.6s → 2.95s on a
+Colab T4), which is what makes the warning arrive in time to act.
 
 ## What was built
 - A reproducible synthetic comment-stream generator (scales to millions of rows).
@@ -28,7 +28,7 @@ Google Cloud (Cloud Storage / BigQuery) for the data layer + NVIDIA (cuDF /
 
 ## Measured results
 100% precision and 100% recall against planted ground-truth meltdowns; 66 of 68
-meltdowns forecast before they peaked; ~20× GPU speedup on the heavy stage.
+meltdowns forecast before they peaked; **33× GPU speedup** on the heavy stage (5M comments: 97.6s → 2.95s).
 
 ## Links
 - **Deployment:** _[paste your public URL]_

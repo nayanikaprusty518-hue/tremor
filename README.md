@@ -74,6 +74,10 @@ That is the whole point of **`cudf.pandas`**: a drop-in that dispatches pandas
 calls to the GPU. Run `notebooks/tremor_gpu_benchmark.ipynb` on a Colab/GCP GPU
 to reproduce the CPU-vs-GPU numbers; the dashboard then shows the speedup live.
 
+> **Measured (Colab T4, 5,000,000 comments):** heavy stage CPU **97.6s** → GPU
+> **2.95s** = **33× faster**. Profiler-confirmed: scoring, bucketing and the
+> groupby all run on the GPU.
+
 **Why it matters operationally:** to warn *early* you must score comments faster
 than they arrive. On CPU a busy day's backlog takes too long — you learn about the
 fire afterwards. On a GPU it is seconds → the warning arrives in time to act. That

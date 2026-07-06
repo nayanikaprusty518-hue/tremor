@@ -1,0 +1,19 @@
+{
+  "cpu": {
+    "engine": "CPU (pandas)",
+    "rows": 5000000,
+    "buckets": 1145835,
+    "load_s": 0.8374,
+    "process_s": 97.6006,
+    "rows_per_sec": 51229
+  },
+  "gpu": {
+    "engine": "GPU (NVIDIA cuDF via cudf.pandas)",
+    "rows": 5000000,
+    "buckets": 1145835,
+    "load_s": 0.6929,
+    "process_s": 2.9536,
+    "rows_per_sec": 1692863
+  },
+  "speedup": 33.0
+}

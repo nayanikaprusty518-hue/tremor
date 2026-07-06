@@ -49,9 +49,9 @@ Let the ⚠️ warning banner appear, then reach the dotted "peak" line. Pause o
 **[2:10–2:45] Why acceleration matters**
 > "To give that warning in time, you have to score comments faster than they arrive.
 > Tremor's heavy stage runs on the exact same code on CPU or GPU — `cudf.pandas` is a
-> drop-in. On five million comments, the NVIDIA GPU did in under a second what took
-> the CPU twenty — about **twenty times faster.** That speed is the difference between
-> a warning that arrives in time and one that arrives too late."
+> drop-in. On five million comments, the NVIDIA GPU did in about three seconds what
+> took the CPU a minute and a half — **thirty-three times faster.** That speed is the
+> difference between a warning that arrives in time and one that arrives too late."
 
 _On screen: the sidebar speedup banner, then flash the Colab notebook / benchmark output._
 

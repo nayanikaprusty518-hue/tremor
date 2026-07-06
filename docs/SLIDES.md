@@ -60,7 +60,7 @@ Same code, two engines — `cudf.pandas` is a **drop-in**:
 python                     benchmark.py   →  CPU (pandas)
 python -m cudf.pandas      benchmark.py   →  NVIDIA GPU (cuDF)
 ```
-> **[INSERT YOUR COLAB NUMBERS]** e.g. *5,000,000 comments — CPU 20.1s → GPU 0.9s = **~22× faster***
+> **5,000,000 comments — CPU 97.6s → GPU 2.95s = 33× faster** *(measured on a Colab T4)*
 
 **Why it matters:** to warn *early* you must score faster than comments arrive.
 CPU = you learn about the fire afterwards. GPU = the warning arrives in time to act.
@@ -74,6 +74,7 @@ CPU = you learn about the fire afterwards. GPU = the warning arrives in time to 
 | Recall of true meltdowns | **100% (68/68)** |
 | Meltdowns forecast **before** peak | **66 / 68** |
 | Typical lead time | **~60 minutes** |
+| GPU speedup (heavy stage, 5M comments) | **33×** (97.6s → 2.95s) |
 
 _Ground-truth meltdowns are planted in the synthetic data, so accuracy is measurable, not asserted._
 
